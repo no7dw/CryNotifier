@@ -16,7 +16,7 @@ Meteor.methods({
     );
   },
   removequestion: function(questionId) {
-    var question = Questions.findOne(questionId);
+    console.log('remove', questionId);
     Questions.remove(
       {"_id":questionId}
     );
@@ -24,39 +24,22 @@ Meteor.methods({
 });
 if (Meteor.isClient){
   Meteor.subscribe('questions');
-  
-  // var questionsData = [
-  //   {
-  //     text: 'Why does the sun shine?',
-  //     votes: 0
-  //   },
-  //   {
-  //     text: 'If you were a hot dog, and you'
-  //    + 'were starving to death, would you eat yourself?',
-  //     votes: 0
-  //   },
-  //   {
-  //     text: 'What is the airspeed velocity'
-  //     + ' of an unladen swallow?',
-  //     votes: 0
-  //   }
-  // ];
-  
 
   Template.questionsList.helpers({
-    // questions: questionsData
     questions:Questions.find({}, {sort: {votes: -1}}), 
   });
   Template.questionForm.events({
     'submit form': function(e) {
+      console.log('insert',$(e.target).find('#question').val());
       Questions.insert({
         'text': $(e.target).find('#question').val(),
         'votes': 0
-      });
+      });      
     }
   });
   Template.questionsList.events({
     'click .vote-up': function(e) {
+      
       e.preventDefault();
       Meteor.call('upvote', this._id);
     },
@@ -72,26 +55,15 @@ if (Meteor.isClient){
   });
 }
 
-// if (Meteor.isClient) {
-//   // counter starts at 0
-//   Session.setDefault("counter", 0);
-
-//   Template.hello.helpers({
-//     counter: function () {
-//       return Session.get("counter");
-//     }
-//   });
-
-//   Template.hello.events({
-//     'click button': function () {
-//       // increment the counter when button is clicked
-//       Session.set("counter", Session.get("counter") + 1);
-//     }
-//   });
-// }
 
 if (Meteor.isServer) {
   console.log("this is server side");
+  //this allow is important in auth mode, otherwise you will get access deny
+  Questions.allow({
+    insert: function () { return true; },
+    // update: function () { return true; },
+    // remove: function () { return true; } 
+  });
   Meteor.startup(function () {
     console.log("in startup");
     // code to run on server at startup
