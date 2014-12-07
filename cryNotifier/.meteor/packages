@@ -6,4 +6,6 @@
 meteor-platform
 insecure
 mizzao:bootstrap-3
+accounts-twitter
+ian:accounts-ui-bootstrap-3
 
