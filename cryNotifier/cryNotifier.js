@@ -14,6 +14,12 @@ Meteor.methods({
       questionId,
       { $set: { votes: question.votes - 1 }}
     );
+  },
+  removequestion: function(questionId) {
+    var question = Questions.findOne(questionId);
+    Questions.remove(
+      {"_id":questionId}
+    );
   }
 });
 if (Meteor.isClient){
@@ -58,6 +64,10 @@ if (Meteor.isClient){
     'click .vote-down': function(e) {
       e.preventDefault();
       Meteor.call('downvote', this._id);
+    },
+    'click .remove': function(e) {
+      e.preventDefault();
+      Meteor.call('removequestion', this._id);
     }
   });
 }
@@ -81,7 +91,9 @@ if (Meteor.isClient){
 // }
 
 if (Meteor.isServer) {
+  console.log("this is server side");
   Meteor.startup(function () {
+    console.log("in startup");
     // code to run on server at startup
     if (Questions.find().count() === 0) {
       console.log('==0');
